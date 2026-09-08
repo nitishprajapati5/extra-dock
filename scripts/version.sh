@@ -55,6 +55,11 @@ get_current_version() {
 # - Uses git commit count if git is present and commits exist
 # - Otherwise falls back to existing CFBundleVersion or 1
 get_build_number() {
+    if [[ -n "${BUILD_NUMBER:-}" ]]; then
+        echo "${BUILD_NUMBER}"
+        return 0
+    fi
+
     local git_count
     if git rev-parse --git-dir > /dev/null 2>&1; then
         git_count="$(git rev-list --count HEAD 2>/dev/null || true)"
@@ -241,6 +246,96 @@ cmd_release() {
     echo "============================================================"
 }
 
+# Analyzes commit messages using Conventional Commits specification
+detect_bump_type_from_commits() {
+    local last_tag
+    last_tag="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+
+    local log_range="HEAD"
+    if [[ -n "${last_tag}" ]]; then
+        log_range="${last_tag}..HEAD"
+    else
+        log_range="-n 20"
+    fi
+
+    local commits
+    commits="$(git log ${log_range} --format="%s%n%b" 2>/dev/null || true)"
+
+    if [[ -z "${commits}" ]]; then
+        echo "patch"
+        return 0
+    fi
+
+    # 1. Check for Breaking Changes (Major bump: 1.0.0 -> 2.0.0)
+    if echo "${commits}" | grep -qE "BREAKING CHANGE|^[a-zA-Z]+(\([^\)]+\))?!:"; then
+        echo "major"
+        return 0
+    fi
+
+    # 2. Check for Features (Minor bump: 1.0.0 -> 1.1.0)
+    if echo "${commits}" | grep -qE "^feat(\([^\)]+\))?:"; then
+        echo "minor"
+        return 0
+    fi
+
+    # 3. Default to Patch (1.0.0 -> 1.0.1) for bug fixes or maintenance
+    echo "patch"
+}
+
+# Command: auto [--apply] [--build <number>] [--tag]
+# Automatically determines bump type from commit messages and updates version
+cmd_auto() {
+    local apply=false
+    local create_tag=false
+    local custom_build=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --apply)
+                apply=true
+                shift
+                ;;
+            --tag)
+                create_tag=true
+                shift
+                ;;
+            --build)
+                custom_build="$2"
+                shift 2
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    local bump_type
+    bump_type="$(detect_bump_type_from_commits)"
+
+    if [[ "${apply}" == "true" ]]; then
+        local extra_arg=""
+        if [[ "${create_tag}" == "true" ]]; then
+            extra_arg="--tag"
+        fi
+
+        if [[ -n "${custom_build}" ]]; then
+            if [[ -n "${extra_arg}" ]]; then
+                BUILD_NUMBER="${custom_build}" cmd_bump "${bump_type}" "${extra_arg}"
+            else
+                BUILD_NUMBER="${custom_build}" cmd_bump "${bump_type}"
+            fi
+        else
+            if [[ -n "${extra_arg}" ]]; then
+                cmd_bump "${bump_type}" "${extra_arg}"
+            else
+                cmd_bump "${bump_type}"
+            fi
+        fi
+    else
+        cmd_next "${bump_type}"
+    fi
+}
+
 # ------------------------------------------------------------------------------
 # 4. CLI Routing & Help Display
 # ------------------------------------------------------------------------------
@@ -254,6 +349,7 @@ Usage:
 Commands:
   current                         Display current version
   next [patch|minor|major]        Preview next semantic version
+  auto [--apply] [--build N]      Auto-detect bump from commits (Conventional Commits)
   bump [patch|minor|major|X.Y.Z]  Update VERSION file and Info.plist
     --tag                         Also commit changes and create git tag 'vX.Y.Z'
   release [patch|minor|major]     Full release: bump, build .app, zip, and generate cask
@@ -262,9 +358,10 @@ Commands:
 
 Examples:
   ./scripts/version.sh current
+  ./scripts/version.sh auto
+  ./scripts/version.sh auto --apply --build 42
   ./scripts/version.sh next minor
   ./scripts/version.sh bump patch
-  ./scripts/version.sh bump 1.2.0 --tag
   ./scripts/version.sh release patch
 EOF
 }
@@ -277,6 +374,10 @@ case "${COMMAND}" in
         ;;
     next)
         cmd_next "${2:-patch}"
+        ;;
+    auto)
+        shift
+        cmd_auto "$@"
         ;;
     bump)
         shift

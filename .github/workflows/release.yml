@@ -1,0 +1,78 @@
+name: Automated Semantic Release & Build
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+      - 'SECURITY.md'
+      - 'docs/**'
+      - '.gitignore'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-14
+    steps:
+      - name: Checkout Code with Full History
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git Identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Auto-Determine Semantic Version & Build Number
+        id: versioning
+        run: |
+          chmod +x scripts/*.sh
+          
+          # Build number is automatically set to GitHub Actions Run Number
+          BUILD_NO="${{ github.run_number }}"
+          echo "BUILD_NUMBER=${BUILD_NO}" >> $GITHUB_ENV
+          
+          # Automatically bump version based on Conventional Commits in push
+          ./scripts/version.sh auto --apply --build "${BUILD_NO}"
+          
+          NEW_VER="$(./scripts/version.sh current)"
+          echo "NEW_VERSION=${NEW_VER}" >> $GITHUB_ENV
+          echo "Version determined: ${NEW_VER} (Build ${BUILD_NO})"
+
+      - name: Run Unit Tests
+        run: |
+          swift test
+
+      - name: Build Standalone macOS App Bundle
+        run: |
+          ./scripts/build_app.sh
+
+      - name: Package Release Archive & Generate Homebrew Cask
+        run: |
+          ./scripts/make_cask.sh "${{ env.NEW_VERSION }}" "${{ github.repository_owner }}"
+
+      - name: Commit Version Changes Back to Repository
+        run: |
+          git add VERSION Info.plist
+          # [skip ci] prevents recursive GitHub Actions workflow execution
+          git commit -m "chore(release): bump version to v${{ env.NEW_VERSION }} (Build ${{ env.BUILD_NUMBER }}) [skip ci]" || echo "No changes to commit"
+          git push origin main || true
+
+      - name: Create GitHub Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v${{ env.NEW_VERSION }}"
+          name: "MultiDock v${{ env.NEW_VERSION }}"
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            build/MultiDock-${{ env.NEW_VERSION }}.zip
+            build/multidock.rb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
