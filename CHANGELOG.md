@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Semantic Versioning automation suite (`scripts/version.sh`).
+- Security hardening suite: macOS Hardened Runtime, `MultiDock.entitlements`, URL scheme sanitization, image extension verification, defensive JSON deserialization, POSIX 0600 file permissions, and Apple Notarization pipeline (`scripts/notarize.sh`).
+- Security and vulnerability policy documentation (`SECURITY.md`).
 
 ---
 

@@ -118,5 +118,39 @@ MultiDock follows [Semantic Versioning (SemVer 2.0.0)](https://semver.org/):
 
 ---
 
+## 🔒 Security & Privacy
+
+MultiDock is built with an **offline-first, zero-telemetry** architecture:
+- **Zero Tracking**: No network telemetry, analytics, or background reporting.
+- **Local User Isolation**: All dock settings are saved locally with POSIX `0600` permissions (restricted to the user account) and `NSFileProtectionComplete`.
+- **Target Sanitization**: Pinned application targets are restricted to valid local files and standard web protocols. Potentially unsafe URI schemes (`javascript:`, `applescript:`, `data:`) are strictly blocked.
+- **Hardened Runtime**: Released binaries include macOS Hardened Runtime (`--options runtime`) with library validation and restricted entitlements.
+- For full details, see [SECURITY.md](SECURITY.md).
+
+---
+
+## 🚀 Public Release & Gatekeeper (Product Hunt & Homebrew)
+
+When publishing to Product Hunt or distributing via Homebrew Cask:
+
+1. **Local / Unnotarized Builds**:
+   Users who download an unnotarized zip can clear the macOS quarantine flag by running:
+   ```bash
+   xattr -cr /Applications/MultiDock.app
+   ```
+   *(Or by right-clicking `MultiDock.app` and selecting **Open**).*
+
+2. **Official Apple Notarization (Zero Gatekeeper Prompts)**:
+   If you have an Apple Developer ID:
+   ```bash
+   # 1. Build with your Developer ID
+   DEVELOPER_ID="Developer ID Application: Your Name (TEAM_ID)" ./scripts/build_app.sh
+
+   # 2. Notarize and staple with Apple
+   ./scripts/notarize.sh <keychain-profile-name>
+   ```
+
+---
+
 ## 📄 License
 MIT License.

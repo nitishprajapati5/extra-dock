@@ -87,6 +87,68 @@ final class DockManagerTests: XCTestCase {
 
         try? FileManager.default.removeItem(at: tempDir)
     }
+
+    func testSecurityUrlSchemeValidation() {
+        // Safe URLs
+        let safeWeb = PinnedItem(url: URL(string: "https://github.com/multidock")!)
+        XCTAssertTrue(safeWeb.isSafeToLaunch)
+
+        let safeFile = PinnedItem(url: URL(fileURLWithPath: "/System/Applications/Calculator.app"))
+        XCTAssertTrue(safeFile.isSafeToLaunch)
+
+        // Unsafe schemes must be blocked
+        let unsafeJs = PinnedItem(url: URL(string: "javascript:alert(1)")!)
+        XCTAssertFalse(unsafeJs.isSafeToLaunch)
+
+        let unsafeAppleScript = PinnedItem(url: URL(string: "applescript:do_shell_script")!)
+        XCTAssertFalse(unsafeAppleScript.isSafeToLaunch)
+
+        let unsafeData = PinnedItem(url: URL(string: "data:text/html;base64,PHNjcmlwdD4=")!)
+        XCTAssertFalse(unsafeData.isSafeToLaunch)
+
+        // Non-existent file path must be blocked
+        let missingFile = PinnedItem(url: URL(fileURLWithPath: "/non/existent/malicious/app.sh"))
+        XCTAssertFalse(missingFile.isSafeToLaunch)
+    }
+
+    func testSecurityCustomIconValidation() {
+        // Non-existent or invalid extensions must be rejected
+        XCTAssertFalse(PinnedItem.isValidIconPath("/tmp/malicious.sh"))
+        XCTAssertFalse(PinnedItem.isValidIconPath("/tmp/malicious.exe"))
+        XCTAssertFalse(PinnedItem.isValidIconPath(nil))
+        XCTAssertFalse(PinnedItem.isValidIconPath(""))
+    }
+
+    func testSecurityDockConfigBoundsClamping() throws {
+        let json = """
+        {
+            "id": "\(UUID().uuidString)",
+            "name": "Extreme Values Dock",
+            "orientation": "horizontal",
+            "edge": "bottom",
+            "screenIndex": 999,
+            "iconSize": 50000.0,
+            "spacing": -50.0,
+            "backgroundStyle": "glass",
+            "customColorOpacity": 9.99,
+            "magnificationScale": 100.0,
+            "cornerRadius": 500.0,
+            "paddingH": 200.0,
+            "paddingV": 200.0,
+            "items": []
+        }
+        """.data(using: .utf8)!
+
+        let decoded = try JSONDecoder().decode(DockConfig.self, from: json)
+        XCTAssertLessThanOrEqual(decoded.screenIndex, 32)
+        XCTAssertLessThanOrEqual(decoded.iconSize, 256.0)
+        XCTAssertGreaterThanOrEqual(decoded.spacing, 0.0)
+        XCTAssertLessThanOrEqual(decoded.customColorOpacity, 1.0)
+        XCTAssertLessThanOrEqual(decoded.magnificationScale, 3.0)
+        XCTAssertLessThanOrEqual(decoded.cornerRadius, 64.0)
+        XCTAssertLessThanOrEqual(decoded.paddingH, 64.0)
+        XCTAssertLessThanOrEqual(decoded.paddingV, 64.0)
+    }
 }
 #endif
 

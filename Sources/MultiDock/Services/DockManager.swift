@@ -98,7 +98,10 @@ public final class DockManager: ObservableObject {
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             let data = try encoder.encode(docks)
-            try data.write(to: storageUrl, options: .atomic)
+            // Security: Atomic write with Complete File Protection
+            try data.write(to: storageUrl, options: [.atomic, .completeFileProtection])
+            // Enforce POSIX 0600 (owner read/write only, protecting user data)
+            try? FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: storageUrl.path)
         } catch {
             NSLog("[MultiDock] Failed to save docks to \(storageUrl): \(error)")
         }

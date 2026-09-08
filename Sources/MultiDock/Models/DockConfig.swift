@@ -149,28 +149,51 @@ public struct DockConfig: Identifiable, Codable, Equatable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(UUID.self, forKey: .id)
-        self.name = try container.decode(String.self, forKey: .name)
+        let rawName = try container.decode(String.self, forKey: .name)
+        self.name = String(rawName.prefix(128))
         self.orientation = try container.decode(DockOrientation.self, forKey: .orientation)
         self.edge = try container.decode(DockEdge.self, forKey: .edge)
-        self.screenIndex = try container.decode(Int.self, forKey: .screenIndex)
-        self.iconSize = try container.decodeIfPresent(Double.self, forKey: .iconSize) ?? 64.0
-        self.spacing = try container.decodeIfPresent(Double.self, forKey: .spacing) ?? 12.0
+        let rawScreenIndex = try container.decode(Int.self, forKey: .screenIndex)
+        self.screenIndex = max(0, min(rawScreenIndex, 32))
+
+        // Defensive bounds clamping to protect UI and memory
+        let rawIconSize = try container.decodeIfPresent(Double.self, forKey: .iconSize) ?? 64.0
+        self.iconSize = min(max(rawIconSize, 16.0), 256.0)
+
+        let rawSpacing = try container.decodeIfPresent(Double.self, forKey: .spacing) ?? 12.0
+        self.spacing = min(max(rawSpacing, 0.0), 100.0)
+
         self.autoHide = try container.decodeIfPresent(Bool.self, forKey: .autoHide) ?? true
         self.backgroundStyle = try container.decode(BackgroundStyle.self, forKey: .backgroundStyle)
         self.useCustomColor = try container.decodeIfPresent(Bool.self, forKey: .useCustomColor) ?? false
         self.customColorHex = try container.decodeIfPresent(String.self, forKey: .customColorHex) ?? "#1E1E2E"
-        self.customColorOpacity = try container.decodeIfPresent(Double.self, forKey: .customColorOpacity) ?? 0.55
+
+        let rawOpacity = try container.decodeIfPresent(Double.self, forKey: .customColorOpacity) ?? 0.55
+        self.customColorOpacity = min(max(rawOpacity, 0.0), 1.0)
+
         self.floatingX = try container.decodeIfPresent(Double.self, forKey: .floatingX)
         self.floatingY = try container.decodeIfPresent(Double.self, forKey: .floatingY)
-        self.items = try container.decode([PinnedItem].self, forKey: .items)
+
+        let rawItems = try container.decode([PinnedItem].self, forKey: .items)
+        self.items = Array(rawItems.prefix(256))
+
         self.showLabels = try container.decodeIfPresent(Bool.self, forKey: .showLabels) ?? false
         self.magnificationEnabled = try container.decodeIfPresent(Bool.self, forKey: .magnificationEnabled) ?? true
-        self.magnificationScale = try container.decodeIfPresent(Double.self, forKey: .magnificationScale) ?? 1.25
-        self.cornerRadius = try container.decodeIfPresent(Double.self, forKey: .cornerRadius) ?? 22.0
-        self.paddingH = try container.decodeIfPresent(Double.self, forKey: .paddingH) ?? 14.0
-        self.paddingV = try container.decodeIfPresent(Double.self, forKey: .paddingV) ?? 10.0
+
+        let rawMagScale = try container.decodeIfPresent(Double.self, forKey: .magnificationScale) ?? 1.25
+        self.magnificationScale = min(max(rawMagScale, 1.0), 3.0)
+
+        let rawCorner = try container.decodeIfPresent(Double.self, forKey: .cornerRadius) ?? 22.0
+        self.cornerRadius = min(max(rawCorner, 0.0), 64.0)
+
+        let rawPadH = try container.decodeIfPresent(Double.self, forKey: .paddingH) ?? 14.0
+        self.paddingH = min(max(rawPadH, 0.0), 64.0)
+
+        let rawPadV = try container.decodeIfPresent(Double.self, forKey: .paddingV) ?? 10.0
+        self.paddingV = min(max(rawPadV, 0.0), 64.0)
+
         self.isVisible = try container.decodeIfPresent(Bool.self, forKey: .isVisible) ?? true
-        // Backward-compat: if backgroundStyle is unknown (e.g. old JSON missing liquidGlass), fall back to glass
+        // Backward-compat: if backgroundStyle is unknown, fall back to glass
         if self.backgroundStyle == BackgroundStyle.glass && (try? container.decodeIfPresent(String.self, forKey: .backgroundStyle)) == nil {
             self.backgroundStyle = .glass
         }

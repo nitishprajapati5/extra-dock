@@ -116,14 +116,34 @@ if [[ -f "${CONTENTS_DIR}/Info.plist" ]]; then
 fi
 
 # ------------------------------------------------------------------------------
-# 4. Code Signing (Ad-Hoc for Local Execution)
+# 4. Code Signing & Hardened Runtime Security Hardening
 # ------------------------------------------------------------------------------
-# Signs the application bundle using ad-hoc signing ("-"):
-#   --force: Overwrite any existing signatures
-#   --deep: Recursively sign nested frameworks or libraries if present
-#   --sign -: Signs ad-hoc without requiring an Apple Developer ID certificate
-echo "==> Signing application bundle (ad-hoc for local development)..."
-codesign --force --deep --sign - "${APP_BUNDLE}"
+# Signs the application bundle with macOS Hardened Runtime (--options runtime)
+# and links the explicit entitlements file for Gatekeeper security compliance.
+# - If DEVELOPER_ID or SIGNING_IDENTITY is set, signs with that certificate and secure Apple timestamp
+# - Otherwise signs ad-hoc ("-") with Hardened Runtime enabled
+ENTITLEMENTS_FILE="${ROOT_DIR}/MultiDock.entitlements"
+SIGN_IDENTITY="${DEVELOPER_ID:-${SIGNING_IDENTITY:--}}"
+
+CODESIGN_ARGS=(
+    --force
+    --deep
+    --options runtime
+)
+
+if [[ -f "${ENTITLEMENTS_FILE}" ]]; then
+    CODESIGN_ARGS+=(--entitlements "${ENTITLEMENTS_FILE}")
+fi
+
+if [[ "${SIGN_IDENTITY}" != "-" ]]; then
+    echo "==> Signing with Developer ID: ${SIGN_IDENTITY} (Hardened Runtime + Timestamp)..."
+    CODESIGN_ARGS+=(--timestamp --sign "${SIGN_IDENTITY}")
+else
+    echo "==> Signing application bundle (Hardened Runtime ad-hoc)..."
+    CODESIGN_ARGS+=(--sign "-")
+fi
+
+codesign "${CODESIGN_ARGS[@]}" "${APP_BUNDLE}"
 
 # ------------------------------------------------------------------------------
 # 5. Done!

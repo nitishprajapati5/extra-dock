@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Hardened Runtime Security Flags -->
+    <!-- Enforce library validation: only load Apple-signed libraries and user frameworks -->
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <false/>
+    <!-- Disallow unsigned executable memory allocations -->
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <false/>
+    <!-- Disallow dynamic code generation (JIT) -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <false/>
+
+    <!-- Outgoing network client for checking updates and opening external links -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <!-- User-selected files access (for apps and icons dropped by user) -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+
+    <!-- Apple Events permission for workspace activation -->
+    <key>com.apple.security.automation.apple-events</key>
+    <true/>
+</dict>
+</plist>
