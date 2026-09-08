@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Script: version.sh
-# Project: OrbitDock
+# Project: MultiDock
 #
 # Description:
 #   Comprehensive Semantic Versioning (SemVer 2.0.0) control manager for
-#   OrbitDock. Handles reading, previewing, bumping (major, minor, patch),
+#   MultiDock. Handles reading, previewing, bumping (major, minor, patch),
 #   synchronizing Info.plist, managing build numbers, and coordinating
 #   full release builds.
 #
@@ -211,7 +211,7 @@ cmd_release() {
     local bump_type="${1:-patch}"
 
     echo "============================================================"
-    echo "  OrbitDock Semantic Release Pipeline"
+    echo "  MultiDock Semantic Release Pipeline"
     echo "============================================================"
 
     # Step 1: Bump version
@@ -235,9 +235,9 @@ cmd_release() {
     echo "  Release v${release_ver} ready!"
     echo "============================================================"
     echo "Artifacts generated in '${ROOT_DIR}/build':"
-    echo "  - OrbitDock.app (signed application)"
-    echo "  - OrbitDock-${release_ver}.zip (release asset)"
-    echo "  - orbitdock.rb (Homebrew Cask formula)"
+    echo "  - MultiDock.app (signed application)"
+    echo "  - MultiDock-${release_ver}.zip (release asset)"
+    echo "  - multidock.rb (Homebrew Cask formula)"
     echo "============================================================"
 }
 
@@ -246,7 +246,7 @@ cmd_release() {
 # ------------------------------------------------------------------------------
 show_help() {
     cat <<EOF
-OrbitDock Semantic Versioning Control Tool
+MultiDock Semantic Versioning Control Tool
 
 Usage:
   ./scripts/version.sh <command> [options]

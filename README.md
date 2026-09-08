@@ -1,4 +1,4 @@
-# OrbitDock 🚀
+# MultiDock 🚀
 
 A lightweight, customizable multi-dock application for macOS built with SwiftUI and AppKit. Ships free and open source via Homebrew.
 
@@ -24,16 +24,17 @@ A lightweight, customizable multi-dock application for macOS built with SwiftUI 
 ## 🏗️ Architecture
 
 ```
-OrbitDock/
+MultiDock/
 ├── Package.swift                             # Swift Package Manager manifest
 ├── Info.plist                                # LSUIElement=true agent configuration
 ├── scripts/
-│   ├── build_app.sh                          # Compiles & bundles OrbitDock.app
-│   └── make_cask.sh                          # Packages release zip & generates Homebrew Cask
+│   ├── build_app.sh                          # Compiles & bundles MultiDock.app
+│   ├── make_cask.sh                          # Packages release zip & generates Homebrew Cask
+│   └── version.sh                            # SemVer 2.0.0 bump and release manager
 ├── Sources/
-│   └── OrbitDock/
+│   └── MultiDock/
 │       ├── App/
-│       │   ├── OrbitDockApp.swift            # SwiftUI App scene entry point
+│       │   ├── MultiDockApp.swift            # SwiftUI App scene entry point
 │       │   └── AppDelegate.swift             # Status item, NSMenu, settings window
 │       ├── Models/
 │       │   ├── DockConfig.swift              # Dock configuration (edge, orientation, sizing)
@@ -49,7 +50,7 @@ OrbitDock/
 │           ├── DockItemView.swift            # Icon renderer, hover magnification, running dot
 │           └── SettingsView.swift            # Preferences UI (docks sidebar, appearance sliders)
 └── Tests/
-    └── OrbitDockTests/
+    └── MultiDockTests/
         └── DockManagerTests.swift            # Unit tests for serialization and dock operations
 ```
 
@@ -72,18 +73,18 @@ swift run
 ```
 
 ### Building the Standalone `.app` Bundle
-To build and package into `build/OrbitDock.app`:
+To build and package into `build/MultiDock.app`:
 ```bash
 chmod +x scripts/*.sh
 ./scripts/build_app.sh
-open build/OrbitDock.app
+open build/MultiDock.app
 ```
 
 ---
 
 ## 🍺 Homebrew Cask Distribution
 
-OrbitDock is distributed as a precompiled Homebrew Cask:
+MultiDock is distributed as a precompiled Homebrew Cask:
 
 1. Build release zip and generate Cask definition:
    ```bash
@@ -92,19 +93,19 @@ OrbitDock is distributed as a precompiled Homebrew Cask:
 
 2. Tag and publish the release on GitHub:
    - Create release `v1.0.0`
-   - Upload `build/OrbitDock-1.0.0.zip`
+   - Upload `build/MultiDock-1.0.0.zip`
 
 3. Install locally or via custom tap:
    ```bash
-   brew tap <your-username>/homebrew-orbitdock
-   brew install --cask orbitdock
+   brew tap <your-username>/homebrew-multidock
+   brew install --cask multidock
    ```
 
 ---
 
 ## 🏷️ Semantic Versioning & Releases
 
-OrbitDock follows [Semantic Versioning (SemVer 2.0.0)](https://semver.org/):
+MultiDock follows [Semantic Versioning (SemVer 2.0.0)](https://semver.org/):
 
 | Command | Action |
 |---|---|

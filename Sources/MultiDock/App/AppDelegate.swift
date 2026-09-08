@@ -22,10 +22,10 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
 
         if let button = statusItem?.button {
             let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)
-            let image = NSImage(systemSymbolName: "dock.rectangle", accessibilityDescription: "OrbitDock")?
+            let image = NSImage(systemSymbolName: "dock.rectangle", accessibilityDescription: "MultiDock")?
                 .withSymbolConfiguration(config)
             button.image = image
-            button.toolTip = "OrbitDock - Floating macOS Docks"
+            button.toolTip = "MultiDock - Floating macOS Docks"
         }
 
         rebuildMenu()
@@ -35,7 +35,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
         let menu = NSMenu()
 
         // Title header
-        let titleItem = NSMenuItem(title: "OrbitDock", action: nil, keyEquivalent: "")
+        let titleItem = NSMenuItem(title: "MultiDock", action: nil, keyEquivalent: "")
         titleItem.isEnabled = false
         menu.addItem(titleItem)
 
@@ -133,7 +133,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
         menu.addItem(NSMenuItem.separator())
 
         // Quit
-        let quitItem = NSMenuItem(title: "Quit OrbitDock", action: #selector(quitApp), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: "Quit MultiDock", action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
 
@@ -183,7 +183,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
             backing: .buffered,
             defer: false
         )
-        window.title = "OrbitDock Preferences"
+        window.title = "MultiDock Preferences"
         window.minSize = NSSize(width: 840, height: 560)
         window.center()
         window.isReleasedWhenClosed = false

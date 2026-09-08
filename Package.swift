@@ -2,27 +2,27 @@
 import PackageDescription
 
 let package = Package(
-    name: "OrbitDock",
+    name: "MultiDock",
     platforms: [
         .macOS(.v13)
     ],
     products: [
         .executable(
-            name: "OrbitDock",
-            targets: ["OrbitDock"]
+            name: "MultiDock",
+            targets: ["MultiDock"]
         )
     ],
     dependencies: [],
     targets: [
         .executableTarget(
-            name: "OrbitDock",
+            name: "MultiDock",
             dependencies: [],
-            path: "Sources/OrbitDock"
+            path: "Sources/MultiDock"
         ),
         .testTarget(
-            name: "OrbitDockTests",
-            dependencies: ["OrbitDock"],
-            path: "Tests/OrbitDockTests"
+            name: "MultiDockTests",
+            dependencies: ["MultiDock"],
+            path: "Tests/MultiDockTests"
         )
     ]
 )

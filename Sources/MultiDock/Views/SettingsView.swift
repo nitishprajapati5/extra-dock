@@ -833,8 +833,8 @@ struct GeneralTabView: View {
     var body: some View {
         Form {
             Section("Startup") {
-                Toggle("Launch OrbitDock at Login", isOn: $loginManager.isEnabled)
-                Text("OrbitDock will start automatically when you log in to your Mac.")
+                Toggle("Launch MultiDock at Login", isOn: $loginManager.isEnabled)
+                Text("MultiDock will start automatically when you log in to your Mac.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -843,7 +843,7 @@ struct GeneralTabView: View {
                 LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
                 LabeledContent("Build", value: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
 
-                Link("View Source on GitHub", destination: URL(string: "https://github.com/orbitdock/orbitdock")!)
+                Link("View Source on GitHub", destination: URL(string: "https://github.com/multidock/multidock")!)
                     .font(.body)
             }
 

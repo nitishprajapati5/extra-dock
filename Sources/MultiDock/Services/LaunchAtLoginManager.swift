@@ -36,7 +36,7 @@ public final class LaunchAtLoginManager: ObservableObject {
                     try SMAppService.mainApp.unregister()
                 }
             } catch {
-                NSLog("[OrbitDock] LaunchAtLogin toggle failed: \(error.localizedDescription)")
+                NSLog("[MultiDock] LaunchAtLogin toggle failed: \(error.localizedDescription)")
                 // Roll back the published value so the UI stays in sync
                 isEnabled = !isEnabled
             }

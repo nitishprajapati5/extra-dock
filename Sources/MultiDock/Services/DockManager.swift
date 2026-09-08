@@ -30,9 +30,18 @@ public final class DockManager: ObservableObject {
                 for: .applicationSupportDirectory,
                 in: .userDomainMask
             ).first ?? URL(fileURLWithPath: NSTemporaryDirectory())
-            let orbitDir = appSupport.appendingPathComponent("OrbitDock", isDirectory: true)
-            try? FileManager.default.createDirectory(at: orbitDir, withIntermediateDirectories: true)
-            self.storageUrl = orbitDir.appendingPathComponent("docks.json")
+            let multiDir = appSupport.appendingPathComponent("MultiDock", isDirectory: true)
+            try? FileManager.default.createDirectory(at: multiDir, withIntermediateDirectories: true)
+            let multiStorage = multiDir.appendingPathComponent("docks.json")
+
+            // Backward compatibility: Migrate existing docks configuration from OrbitDock if found
+            let oldDir = appSupport.appendingPathComponent("OrbitDock", isDirectory: true)
+            let oldStorage = oldDir.appendingPathComponent("docks.json")
+            if !FileManager.default.fileExists(atPath: multiStorage.path) && FileManager.default.fileExists(atPath: oldStorage.path) {
+                try? FileManager.default.copyItem(at: oldStorage, to: multiStorage)
+            }
+
+            self.storageUrl = multiStorage
         }
 
         loadFromDisk()
@@ -70,7 +79,7 @@ public final class DockManager: ObservableObject {
                 }
             }
         } catch {
-            NSLog("[OrbitDock] Failed to load docks from \(storageUrl): \(error)")
+            NSLog("[MultiDock] Failed to load docks from \(storageUrl): \(error)")
         }
 
         // Fallback default docks based on connected screens
@@ -91,7 +100,7 @@ public final class DockManager: ObservableObject {
             let data = try encoder.encode(docks)
             try data.write(to: storageUrl, options: .atomic)
         } catch {
-            NSLog("[OrbitDock] Failed to save docks to \(storageUrl): \(error)")
+            NSLog("[MultiDock] Failed to save docks to \(storageUrl): \(error)")
         }
     }
 

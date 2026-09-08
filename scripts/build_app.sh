@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Script: build_app.sh
-# Project: OrbitDock
+# Project: MultiDock
 #
 # Description:
-#   Compiles OrbitDock in Release mode using Swift Package Manager and packages
+#   Compiles MultiDock in Release mode using Swift Package Manager and packages
 #   the resulting executable into a standalone, runnable macOS application
-#   bundle (OrbitDock.app).
+#   bundle (MultiDock.app).
 #   Automatically synchronizes the Semantic Version (from VERSION file or
 #   APP_VERSION environment variable) and Build Number (git commit count or
 #   BUILD_NUMBER) into Info.plist before signing the bundle ad-hoc for smooth
@@ -35,7 +35,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Application metadata & bundle directory layout paths
-APP_NAME="OrbitDock"
+APP_NAME="MultiDock"
 BUILD_DIR="${ROOT_DIR}/build"
 APP_BUNDLE="${BUILD_DIR}/${APP_NAME}.app"
 CONTENTS_DIR="${APP_BUNDLE}/Contents"
@@ -84,7 +84,7 @@ fi
 # 3. Assemble the macOS Application Bundle Structure
 # ------------------------------------------------------------------------------
 # A valid macOS .app bundle requires a standard hierarchy:
-# OrbitDock.app/
+# MultiDock.app/
 #   └── Contents/
 #       ├── Info.plist      (App metadata, LSUIElement agent mode, permissions)
 #       ├── MacOS/          (Mach-O executable)

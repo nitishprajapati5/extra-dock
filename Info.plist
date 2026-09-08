@@ -5,13 +5,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
-	<string>OrbitDock</string>
+	<string>MultiDock</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.orbitdock.OrbitDock</string>
+	<string>com.multidock.MultiDock</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>OrbitDock</string>
+	<string>MultiDock</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -25,6 +25,6 @@
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2025 OrbitDock. All rights reserved.</string>
+	<string>Copyright © 2025 MultiDock. All rights reserved.</string>
 </dict>
 </plist>

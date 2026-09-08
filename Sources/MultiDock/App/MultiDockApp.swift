@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct OrbitDockApp: App {
+struct MultiDockApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {

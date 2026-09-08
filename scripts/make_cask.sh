@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Script: make_cask.sh
-# Project: OrbitDock
+# Project: MultiDock
 #
 # Description:
-#   Prepares a release archive (.zip) from OrbitDock.app and generates a
+#   Prepares a release archive (.zip) from MultiDock.app and generates a
 #   ready-to-publish Homebrew Cask formula (.rb) with the computed SHA-256
 #   checksum and download URL.
 #   Automatically defaults the release version from the root VERSION file if
@@ -41,7 +41,7 @@ VERSION="${VERSION:-1.0.0}"
 
 # Read GitHub username/org: CLI argument > git remote or fallback
 USER_OR_ORG="${2:-yourname}"
-APP_NAME="OrbitDock"
+APP_NAME="MultiDock"
 
 # Determine project paths relative to this script's directory
 BUILD_DIR="${ROOT_DIR}/build"
@@ -62,7 +62,7 @@ fi
 # ------------------------------------------------------------------------------
 # We use Apple's 'ditto' utility instead of standard zip:
 #   -c -k: Create a PKZip archive format
-#   --keepParent: Preserves the top-level 'OrbitDock.app' directory inside the zip
+#   --keepParent: Preserves the top-level 'MultiDock.app' directory inside the zip
 # 'ditto' accurately preserves macOS extended attributes, code signatures, and file permissions.
 echo "==> Creating release archive: ${ZIP_FILE}..."
 cd "${BUILD_DIR}"
@@ -92,8 +92,8 @@ cask "${CASK_NAME}" do
   app "${APP_NAME}.app"
 
   zap trash: [
-    "~/Library/Application Support/OrbitDock",
-    "~/Library/Preferences/com.orbitdock.OrbitDock.plist",
+    "~/Library/Application Support/MultiDock",
+    "~/Library/Preferences/com.multidock.MultiDock.plist",
   ]
 end
 EOF

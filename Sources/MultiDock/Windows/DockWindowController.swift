@@ -112,14 +112,14 @@ public final class DockWindowController: NSObject {
             // ── Screen just disappeared ───────────────────────────────────────
             if !isHiddenByMissingScreen {
                 isHiddenByMissingScreen = true
-                NSLog("[OrbitDock] Screen \(config.screenIndex) disconnected — hiding dock '\(config.name)'")
+                NSLog("[MultiDock] Screen \(config.screenIndex) disconnected — hiding dock '\(config.name)'")
                 panel.orderOut(nil)
             }
         } else {
             // ── Screen is present (may have just reconnected) ─────────────────
             if isHiddenByMissingScreen {
                 isHiddenByMissingScreen = false
-                NSLog("[OrbitDock] Screen \(config.screenIndex) reconnected — restoring dock '\(config.name)'")
+                NSLog("[MultiDock] Screen \(config.screenIndex) reconnected — restoring dock '\(config.name)'")
             }
 
             // Always re-layout to snap back to the (possibly changed) screen geometry

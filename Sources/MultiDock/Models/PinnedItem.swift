@@ -88,7 +88,7 @@ public struct PinnedItem: Identifiable, Codable, Equatable, Hashable {
         configuration.activates = true
         NSWorkspace.shared.open(url, configuration: configuration) { _, error in
             if let error = error {
-                NSLog("[OrbitDock] Failed to open \(url): \(error.localizedDescription)")
+                NSLog("[MultiDock] Failed to open \(url): \(error.localizedDescription)")
             }
         }
     }

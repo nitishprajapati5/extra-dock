@@ -1,7 +1,7 @@
 #if canImport(XCTest)
 import Foundation
 import XCTest
-@testable import OrbitDock
+@testable import MultiDock
 
 final class DockManagerTests: XCTestCase {
     func testPinnedItemDisplayName() {
