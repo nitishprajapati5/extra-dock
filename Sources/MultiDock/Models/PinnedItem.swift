@@ -79,20 +79,29 @@ public struct PinnedItem: Identifiable, Codable, Equatable, Hashable {
         }
 
         // Fall back to system icon
-        let path = url.path
-        if FileManager.default.fileExists(atPath: path) {
-            let sysIcon = NSWorkspace.shared.icon(forFile: path)
-            sysIcon.size = NSSize(width: 128, height: 128)
-            return sysIcon
+        if url.isFileURL {
+            let path = url.path
+            if FileManager.default.fileExists(atPath: path) {
+                let sysIcon = NSWorkspace.shared.icon(forFile: path)
+                sysIcon.size = NSSize(width: 128, height: 128)
+                return sysIcon
+            }
+            if let contentType = UTType(filenameExtension: url.pathExtension) {
+                return NSWorkspace.shared.icon(for: contentType)
+            }
+            return NSWorkspace.shared.icon(forFile: path)
+        } else {
+            if let sysImage = NSImage(systemSymbolName: "globe", accessibilityDescription: "Web Link") {
+                sysImage.size = NSSize(width: 128, height: 128)
+                return sysImage
+            }
+            return NSWorkspace.shared.icon(for: .url)
         }
-        if let contentType = UTType(filenameExtension: url.pathExtension) {
-            return NSWorkspace.shared.icon(for: contentType)
-        }
-        return NSWorkspace.shared.icon(forFile: path)
     }
 
     public static func resolveBundleIdentifier(for url: URL) -> String? {
-        Bundle(url: url)?.bundleIdentifier
+        guard url.isFileURL else { return nil }
+        return Bundle(url: url)?.bundleIdentifier
     }
 
     /// Security Verification: Checks if a target URL is safe to open.
