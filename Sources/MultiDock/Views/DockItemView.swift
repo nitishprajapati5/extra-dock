@@ -3,6 +3,7 @@ import SwiftUI
 
 // MARK: - Dock Item View
 
+@MainActor
 public struct DockItemView: View {
     public let item: PinnedItem
     public let dockId: UUID
@@ -25,7 +26,7 @@ public struct DockItemView: View {
         showLabel: Bool = false,
         magnificationEnabled: Bool = true,
         magnificationScale: Double = 1.25,
-        dockManager: DockManager = .shared,
+        dockManager: DockManager? = nil,
         onRemove: @escaping () -> Void
     ) {
         self.item = item
@@ -35,7 +36,7 @@ public struct DockItemView: View {
         self.showLabel = showLabel
         self.magnificationEnabled = magnificationEnabled
         self.magnificationScale = magnificationScale
-        self.dockManager = dockManager
+        self.dockManager = dockManager ?? DockManager.shared
         self.onRemove = onRemove
     }
 

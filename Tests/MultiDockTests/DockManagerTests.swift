@@ -14,7 +14,7 @@ final class DockManagerTests: XCTestCase {
     }
 
     func testEdgeOrientationRules() {
-        var config = DockConfig(edge: .bottom, orientation: .horizontal)
+        var config = DockConfig(orientation: .horizontal, edge: .bottom)
         XCTAssertEqual(config.orientation, .horizontal)
 
         config.updateEdge(.left)
